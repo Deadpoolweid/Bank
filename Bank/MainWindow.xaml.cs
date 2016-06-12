@@ -36,11 +36,11 @@ namespace Bank
                 return;
             }
 
-            MessageBox.Show("Данные введены верно.");
+            //MessageBox.Show("Данные введены верно.");
 
-            //core.SaveData(Convert.ToDouble(tS.Text),Convert.ToDouble(tP.Text),Convert.ToDouble(tN.Text));
+            core.SaveData(Convert.ToDouble(tS.Text),Convert.ToDouble(tP.Text),Convert.ToDouble(tN.Text));
 
-            //dgResults.ItemsSource = core.createPaymentGraph().DefaultView;
+            dgResults.ItemsSource = core.createPaymentGraph().DefaultView;
         }
 
         private bool inputCheck()
@@ -51,6 +51,8 @@ namespace Bank
             {
                 check = false;
             }
+
+            
 
             if (!Regex.IsMatch(tN.Text, "\\d+"))
             {
