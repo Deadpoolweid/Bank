@@ -20,7 +20,7 @@
             </Menu>
         </DockPanel>
         <StackPanel Grid.Row="1" Margin="0,0,-8,0" VerticalAlignment="Top" Orientation="Horizontal" MinWidth="{DynamicResource {x:Static SystemParameters.MaximizedPrimaryScreenWidthKey}}">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+            <StackPanel  Orientation="Horizontal" HorizontalAlignment="Center">
                 <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top">
                     <Label x:Name="label" Content="Сумма покупки" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                     <Label x:Name="label1" Content="Первый взнос" HorizontalAlignment="Left" VerticalAlignment="Top"/>
@@ -34,7 +34,7 @@
                     <TextBox x:Name="tP" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="10"/>
                 </StackPanel>
             </StackPanel>
-            <StackPanel HorizontalAlignment="Right">
+            <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center">
                 <StackPanel HorizontalAlignment="Left" Height="23" VerticalAlignment="Top" Width="216" Orientation="Horizontal">
                     <Label x:Name="label4" Content="Тип платежа" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                     <ComboBox x:Name="cbPayment" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120">

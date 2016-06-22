@@ -40,19 +40,20 @@ namespace Bank
 
             core.SaveData(Convert.ToDouble(tS.Text),Convert.ToDouble(tP.Text),Convert.ToDouble(tN.Text));
 
-            dgResults.ItemsSource = core.createPaymentGraph().DefaultView;
+            if (cbPayment.SelectedIndex == 0)
+            {
+                dgResults.ItemsSource = core.createPaymentGraph(PaymentType.Differentiated).DefaultView;
+            }
+            else
+            {
+                dgResults.ItemsSource = core.createPaymentGraph(PaymentType.Annuity).DefaultView;
+            }
         }
 
         private bool inputCheck()
         {
-            bool check = true;
+            var check = Regex.IsMatch(tS.Text, "\\d*\\.?\\d+");
 
-            if (!Regex.IsMatch(tS.Text, "\\d*\\.?\\d+"))
-            {
-                check = false;
-            }
-
-            
 
             if (!Regex.IsMatch(tN.Text, "\\d+"))
             {
