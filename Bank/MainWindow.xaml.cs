@@ -24,6 +24,8 @@ namespace Bank
         public MainWindow()
         {
             InitializeComponent();
+
+            cbPayment.SelectedIndex = 0;
         }
 
         Core core = new Core();
@@ -50,6 +52,10 @@ namespace Bank
             }
         }
 
+        /// <summary>
+        /// Проверка на правильность введённых данных во всех полях
+        /// </summary>
+        /// <returns>Результат проверки</returns>
         private bool inputCheck()
         {
             var check = Regex.IsMatch(tS.Text, "\\d*\\.?\\d+");
@@ -66,6 +72,18 @@ namespace Bank
             }
 
             return check;
+        }
+
+        private void checkBox_Checked(object sender, RoutedEventArgs e)
+        {
+            tServiceSum.IsEnabled = true;
+            tServiceSum.Focusable = true;
+        }
+
+        private void checkBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            tServiceSum.IsEnabled = false;
+            tServiceSum.Focusable = false;
         }
     }
 }
