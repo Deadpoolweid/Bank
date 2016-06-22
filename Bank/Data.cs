@@ -52,5 +52,15 @@ namespace Bank
         /// Основной платёж
         /// </summary>
         public double generalPayment;
+
+        /// <summary>
+        /// Комисиия
+        /// </summary>
+        public double sp;
+
+        /// <summary>
+        /// Тип обслуживания счёта
+        /// </summary>
+        public ServicePaymentType ServicePaymentType = ServicePaymentType.NoFee;
     }
 }

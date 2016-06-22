@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -26,6 +27,7 @@ namespace Bank
             InitializeComponent();
 
             cbPayment.SelectedIndex = 0;
+            cbServicePayment.SelectedIndex = 0;
         }
 
         Core core = new Core();
@@ -40,7 +42,29 @@ namespace Bank
 
             //MessageBox.Show("Данные введены верно.");
 
-            core.SaveData(Convert.ToDouble(tS.Text),Convert.ToDouble(tP.Text),Convert.ToDouble(tN.Text));
+            core.SaveData(Convert.ToDouble(tS.Text,CultureInfo.InvariantCulture),Convert.ToDouble(tP.Text, CultureInfo.InvariantCulture),
+                Convert.ToDouble(tN.Text,CultureInfo.InvariantCulture));
+
+            ServicePaymentType type = ServicePaymentType.NoFee;
+            double sum = 0;
+            if (checkBox.IsChecked == true)
+            {
+                switch (cbServicePayment.SelectedIndex)
+                {
+                    case 0:
+                        type = ServicePaymentType.ProcessingFee;
+                        break;
+                    case 1:
+                        type = ServicePaymentType.MothlyFee;
+                        break;
+                    case 2:
+                        type = ServicePaymentType.AnnualComission;
+                        break;
+                }
+                sum = Double.Parse(tServiceSum.Text,CultureInfo.InvariantCulture);
+            }
+
+            core.SaveComission(type,sum);
 
             if (cbPayment.SelectedIndex == 0)
             {
@@ -78,12 +102,16 @@ namespace Bank
         {
             tServiceSum.IsEnabled = true;
             tServiceSum.Focusable = true;
+
+            cbServicePayment.IsEnabled = true;
         }
 
         private void checkBox_Unchecked(object sender, RoutedEventArgs e)
         {
             tServiceSum.IsEnabled = false;
             tServiceSum.Focusable = false;
+
+            cbServicePayment.IsEnabled = false;
         }
     }
 }

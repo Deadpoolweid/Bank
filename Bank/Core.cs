@@ -21,6 +21,17 @@ namespace Bank
             Data = data;
         }
 
+        /// <summary>
+        /// Сохранение типа и размера комиссии
+        /// </summary>
+        /// <param name="type">Тип комиссии</param>
+        /// <param name="sum">Сумма комиссии</param>
+        public void SaveComission(ServicePaymentType type, double sum)
+        {
+            Data.ServicePaymentType = type;
+            Data.sp = sum;
+        }
+
         #region Дифференцированный платёж
 
         /// <summary>
@@ -114,9 +125,13 @@ namespace Bank
             table.Columns.Add("Остаток");
             table.Columns.Add("Основной платёж");
             table.Columns.Add("Проценты");
+            table.Columns.Add("Обслуживание");
             table.Columns.Add("Всего за платёж");
 
             string format = "#.##";
+
+            double sp = Data.sp*Data.S/100;
+            double[] item = new double[4];
 
             if (type == PaymentType.Differentiated)
             {
@@ -124,19 +139,42 @@ namespace Bank
 
                 for (int i = 0; i < Data.N; i++)
                 {
+                    item[0] += Data.b;
+                    item[1] += calc_p(calc_Sn(Data.S, Data.b, i), Data.P);
+                    item[2] += sp;
+                    item[3] += Data.b + calc_p(calc_Sn(Data.S, Data.b, i), Data.P) + sp;
+
                     DataRow dr = table.NewRow();
+
                     dr.ItemArray = new object[]
                     {
-                        i + 1,
-                        left.ToString(format),
-                        Data.b.ToString(format),
-                        calc_p(calc_Sn(Data.S, Data.b, i), Data.P).ToString(format),
-                        (Data.b + calc_p(calc_Sn(Data.S, Data.b, i), Data.P)).ToString(format)
+                        i + 1,  // Номер месяца
+                        left.ToString(format),  //Остаток платежа
+                        Data.b.ToString(format),    // Основной платёж
+                        calc_p(calc_Sn(Data.S, Data.b, i), Data.P).ToString(format),    // Начисленные проценты
+                        sp, // Комиссия
+                        (Data.b + calc_p(calc_Sn(Data.S, Data.b, i), Data.P) + sp).ToString(format) // Всего за платёж
                     };
 
                     table.Rows.Add(dr);
                     left -= Data.b;
                 }
+
+                DataRow drEnd = table.NewRow();
+
+                drEnd.ItemArray = new object[]
+                {
+                    "Итого",
+                    "-",
+                    item[0].ToString(format),
+                    item[1].ToString(format),
+                    item[2].ToString(format),
+                    item[3].ToString(format)
+
+                };
+
+                table.Rows.Add(drEnd);
+
             }
             else
             {
@@ -144,24 +182,59 @@ namespace Bank
 
                 for (int i = 0; i < Data.N; i++)
                 {
+                    item[0] += calc_s(calc_x(Data.S, Data.P, Data.N), calc_Pn(left, Data.P));
+                    item[1] += calc_Pn(left, Data.P);
+                    item[2] += sp;
+                    item[3] += calc_x(Data.S, Data.P, Data.N) + sp;
+
                     DataRow dr = table.NewRow();
                     dr.ItemArray = new object[]
                     {
-                        i + 1,
-                        left.ToString(format),
-                        calc_s(calc_x(Data.S,Data.P,Data.N),calc_Pn(left,Data.P)).ToString(format),
-                        calc_Pn(left,Data.P).ToString(format),
-                        calc_x(Data.S,Data.P,Data.N).ToString(format)
+                        i + 1,  // Номер месяца
+                        left.ToString(format), // Остаток
+                        calc_s(calc_x(Data.S,Data.P,Data.N),calc_Pn(left,Data.P)).ToString(format), // Основной платёж
+                        calc_Pn(left,Data.P).ToString(format),  // Начисленные проценты
+                        sp,
+                        (calc_x(Data.S,Data.P,Data.N) + sp).ToString(format)   // Всего за платёж
                     };
 
                     table.Rows.Add(dr);
                     left -= calc_s(calc_x(Data.S,Data.P,Data.N),calc_Pn(left,Data.P));
                 }
+
+                DataRow drEnd = table.NewRow();
+
+                drEnd.ItemArray = new object[]
+                {
+                    "Итого",
+                    "-",
+                    item[0].ToString(format),
+                    item[1].ToString(format),
+                    item[2].ToString(format),
+                    item[3].ToString(format)
+
+                };
+
+                table.Rows.Add(drEnd);
             }
 
 
 
             return table;
+        }
+
+        // TODO Лишнее
+        public double calc_sp(ServicePaymentType type, double sp)
+        {
+            switch (type)
+            {
+                case ServicePaymentType.NoFee:
+                    return 0;
+                case ServicePaymentType.MothlyFee:
+                    return sp*Data.S/100;
+                default:
+                    return 0;
+            }
         }
     }
 }

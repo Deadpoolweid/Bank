@@ -35,17 +35,21 @@
                 </StackPanel>
             </DockPanel>
             <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Width="331">
-                <StackPanel HorizontalAlignment="Left" Height="23" VerticalAlignment="Top" Width="264" Orientation="Horizontal">
-                    <Label x:Name="label4" Content="Тип платежа" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <StackPanel Height="23" VerticalAlignment="Top" Orientation="Horizontal">
+                    <Label x:Name="label4" Content="Тип платежа" HorizontalAlignment="Left" VerticalAlignment="Top" Width="109"/>
                     <ComboBox x:Name="cbPayment" HorizontalAlignment="Left" Width="179">
-                        <ComboBoxItem Content="Дифференцированный" HorizontalAlignment="Left" Width="118"/>
-                        <ComboBoxItem Content="Аннуитетный" HorizontalAlignment="Left" Width="118"/>
+                        <ComboBoxItem Content="Дифференцированный"/>
+                        <ComboBoxItem Content="Аннуитетный"/>
                     </ComboBox>
                 </StackPanel>
                 <StackPanel Height="52" VerticalAlignment="Top" Orientation="Horizontal">
                     <CheckBox x:Name="checkBox" Content="Обслуживание счёта" HorizontalAlignment="Left" Checked="checkBox_Checked" Unchecked="checkBox_Unchecked" Width="158" VerticalAlignment="Center"/>
-                    <StackPanel HorizontalAlignment="Left" Width="171">
-                        <Label x:Name="label5" Content="Сумма обслуживания %"/>
+                    <StackPanel Width="171" Margin="0,6,0,0" VerticalAlignment="Center" Height="46">
+                        <ComboBox x:Name="cbServicePayment" RenderTransformOrigin="0.488,2.023" IsEnabled="False">
+                            <ComboBoxItem Content="Разовая комиссия" HorizontalAlignment="Left" Width="169" ToolTip="К разовой комиссии можно отнести: комиссию за выдачу, оформление кредита и другие комисси, которые оплачиваются не более одного раза за весь срок кредита."/>
+                            <ComboBoxItem Content="Ежемесячная комиссия" HorizontalAlignment="Left" Width="169" ToolTip="К ежемесячной комиссии можно отнести: комиссию за ведение счета, оплату кредита и другие комисси, которые оплачиваются ежемесячно на протяжении всего срока кредита."/>
+                            <ComboBoxItem Content="Ежегодная комиссия" HorizontalAlignment="Left" Width="169" ToolTip="К ежегодной комиссии можно отнести: оплату годового обслуживания кредитного счета или карты, страховку и другие комисси, которые оплачиваются ежегодно на протяжении всего срока кредита."/>
+                        </ComboBox>
                         <TextBox x:Name="tServiceSum" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" IsEnabled="False" Focusable="False" Text="0.9"/>
                     </StackPanel>
                 </StackPanel>
