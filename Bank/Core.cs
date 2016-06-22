@@ -155,7 +155,7 @@ namespace Bank
                     };
 
                     table.Rows.Add(dr);
-                    left -= calc_x(Data.S,Data.P,Data.N);
+                    left -= calc_s(calc_x(Data.S,Data.P,Data.N),calc_Pn(left,Data.P));
                 }
             }
 
