@@ -130,13 +130,22 @@ namespace Bank
 
             string format = "#.##";
 
-            double sp = Data.sp*Data.S/100;
+            double sp = 0;
+            double left = Data.S;
+
+            if (Data.ServicePaymentType == ServicePaymentType.Amount)
+            {
+                sp = Data.sp*Data.S/100;
+            }
+            else if (Data.ServicePaymentType == ServicePaymentType.Residual)
+            {
+                sp = Data.sp*left/100;
+            }
+
             double[] item = new double[4];
 
             if (type == PaymentType.Differentiated)
             {
-                double left = Data.S;
-
                 for (int i = 0; i < Data.N; i++)
                 {
                     item[0] += Data.b;
@@ -152,12 +161,17 @@ namespace Bank
                         left.ToString(format),  //Остаток платежа
                         Data.b.ToString(format),    // Основной платёж
                         calc_p(calc_Sn(Data.S, Data.b, i), Data.P).ToString(format),    // Начисленные проценты
-                        sp, // Комиссия
+                        sp.ToString(format), // Комиссия
                         (Data.b + calc_p(calc_Sn(Data.S, Data.b, i), Data.P) + sp).ToString(format) // Всего за платёж
                     };
 
                     table.Rows.Add(dr);
                     left -= Data.b;
+
+                    if (Data.ServicePaymentType == ServicePaymentType.Residual)
+                    {
+                        sp = Data.sp*left/100;
+                    }
                 }
 
                 DataRow drEnd = table.NewRow();
@@ -178,8 +192,6 @@ namespace Bank
             }
             else
             {
-                double left = Data.S;
-
                 for (int i = 0; i < Data.N; i++)
                 {
                     item[0] += calc_s(calc_x(Data.S, Data.P, Data.N), calc_Pn(left, Data.P));
@@ -194,12 +206,17 @@ namespace Bank
                         left.ToString(format), // Остаток
                         calc_s(calc_x(Data.S,Data.P,Data.N),calc_Pn(left,Data.P)).ToString(format), // Основной платёж
                         calc_Pn(left,Data.P).ToString(format),  // Начисленные проценты
-                        sp,
+                        sp.ToString(format),
                         (calc_x(Data.S,Data.P,Data.N) + sp).ToString(format)   // Всего за платёж
                     };
 
                     table.Rows.Add(dr);
                     left -= calc_s(calc_x(Data.S,Data.P,Data.N),calc_Pn(left,Data.P));
+
+                    if (Data.ServicePaymentType == ServicePaymentType.Residual)
+                    {
+                        sp = Data.sp * left / 100;
+                    }
                 }
 
                 DataRow drEnd = table.NewRow();
@@ -221,20 +238,6 @@ namespace Bank
 
 
             return table;
-        }
-
-        // TODO Лишнее
-        public double calc_sp(ServicePaymentType type, double sp)
-        {
-            switch (type)
-            {
-                case ServicePaymentType.NoFee:
-                    return 0;
-                case ServicePaymentType.MothlyFee:
-                    return sp*Data.S/100;
-                default:
-                    return 0;
-            }
         }
     }
 }

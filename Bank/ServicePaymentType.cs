@@ -6,8 +6,7 @@
     public enum ServicePaymentType
     {
         NoFee,
-        ProcessingFee,
-        MothlyFee,
-        AnnualComission
+        Amount,
+        Residual
     }
 }

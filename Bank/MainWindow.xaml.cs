@@ -52,13 +52,10 @@ namespace Bank
                 switch (cbServicePayment.SelectedIndex)
                 {
                     case 0:
-                        type = ServicePaymentType.ProcessingFee;
+                        type = ServicePaymentType.Amount;
                         break;
                     case 1:
-                        type = ServicePaymentType.MothlyFee;
-                        break;
-                    case 2:
-                        type = ServicePaymentType.AnnualComission;
+                        type = ServicePaymentType.Residual;
                         break;
                 }
                 sum = Double.Parse(tServiceSum.Text,CultureInfo.InvariantCulture);
