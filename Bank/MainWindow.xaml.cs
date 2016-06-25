@@ -42,9 +42,6 @@ namespace Bank
 
             //MessageBox.Show("Данные введены верно.");
 
-            core.SaveData(Convert.ToDouble(tS.Text,CultureInfo.InvariantCulture),Convert.ToDouble(tP.Text, CultureInfo.InvariantCulture),
-                Convert.ToDouble(tN.Text,CultureInfo.InvariantCulture));
-
             ServicePaymentType type = ServicePaymentType.NoFee;
             double sum = 0;
             if (checkBox.IsChecked == true)
@@ -61,18 +58,26 @@ namespace Bank
                 sum = Double.Parse(tServiceSum.Text,CultureInfo.InvariantCulture);
             }
 
-            core.SaveComission(type,sum);
+            core.SaveData(Convert.ToDouble(tS.Text, CultureInfo.InvariantCulture), Convert.ToDouble(tP.Text, CultureInfo.InvariantCulture),
+Convert.ToInt32(tN.Text, CultureInfo.InvariantCulture), type, sum);
 
+            PaymentType pType;
             if (cbPayment.SelectedIndex == 0)
             {
-                dgResults.ItemsSource = core.createPaymentGraph(PaymentType.Differentiated).DefaultView;
+                pType = PaymentType.Differentiated;
             }
             else
             {
-                dgResults.ItemsSource = core.createPaymentGraph(PaymentType.Annuity).DefaultView;
+                pType = PaymentType.Annuity;
             }
+
+            core.Calculate(pType);
+
+            dgResults.ItemsSource = core.createPaymentGraph();
         }
 
+
+        // TODO Добавить недостающие проверки ввода
         /// <summary>
         /// Проверка на правильность введённых данных во всех полях
         /// </summary>

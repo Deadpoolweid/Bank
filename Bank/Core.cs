@@ -9,30 +9,25 @@ namespace Bank
 {
     class Core
     {
+        /// <summary>
+        /// Хранилище
+        /// </summary>
         private Data Data;
 
         /// <summary>
         /// Сохранение введённых данных
         /// </summary>
         /// <param name="data">Данные</param>
-        public void SaveData(double S, double P, double N)
+        /// <param name="type">Тип платежа</param>
+        /// <param name="sType">Тип комиссии</param>
+        /// <param name="sPayment">Размер комиссии</param>
+        public void SaveData(double S, double P, int N, ServicePaymentType type = ServicePaymentType.NoFee, double sPayment = 0)
         {
-            Data data = new Data(S,N,P/100,calc_b(S,N));
+            Data data = new Data(S,N,P/100, type, sPayment);
             Data = data;
         }
 
-        /// <summary>
-        /// Сохранение типа и размера комиссии
-        /// </summary>
-        /// <param name="type">Тип комиссии</param>
-        /// <param name="sum">Сумма комиссии</param>
-        public void SaveComission(ServicePaymentType type, double sum)
-        {
-            Data.ServicePaymentType = type;
-            Data.sp = sum;
-        }
-
-        #region Дифференцированный платёж
+        #region Расчёты по дифференцированному платёжу
 
         /// <summary>
         /// Расчёт основного платежа по дифф. платежу
@@ -40,7 +35,7 @@ namespace Bank
         /// <param name="S">Размер кредита</param>
         /// <param name="N">Количество месяцев</param>
         /// <returns>Основной платёж</returns>
-        public double calc_b(double S, double N) => S/N;
+        public double calc_b(double S, int N) => (double)S/N;
 
         /// <summary>
         /// Расчёт остатка задолженности по дифф. платежу
@@ -58,23 +53,9 @@ namespace Bank
         /// <param name="P">Годовая ставка</param>
         /// <returns>Начисленные проценты</returns>
         public double calc_p(double Sn, double P) => Sn*P/12;
-
-        // TODO возможно лишнее
-        /// <summary>
-        /// Получить полную сумму выплат по дифф. платежу
-        /// </summary>
-        /// <returns>Полная сумма выплат</returns>
-        public double getPaymentInfo()
-        {
-            return Data.paymentsSum;
-        }
-
-
-
         #endregion
 
-
-        #region Аннуитетный платёж
+        #region Расчёты по аннуитетному платёжу
 
         /// <summary>
         /// Расчёт месячного платежа по аннуитету
@@ -83,10 +64,10 @@ namespace Bank
         /// <param name="P">Процентная ставка</param>
         /// <param name="N">Срок кредита(в месяцах)</param>
         /// <returns>Месячный платёж</returns>
-        public double calc_x(double S, double P, double N)
+        public double calc_x(double S, double P, int N)
         {
-            double p = P/12;
-            return S*(p + ((p)/(Math.Pow(1 + p, N) - 1)));
+            double p = P / 12;
+            return S * (p + ((p) / (Math.Pow(1 + p, N) - 1)));
         }
 
         /// <summary>
@@ -97,7 +78,7 @@ namespace Bank
         /// <returns>Начисленные проценты</returns>
         public double calc_Pn(double Sn, double P)
         {
-            return Sn*P/12;
+            return Sn * P / 12;
         }
 
         /// <summary>
@@ -114,10 +95,72 @@ namespace Bank
         #endregion
 
         /// <summary>
+        /// Расчёт комиссии на указанный месяц(Начиная с нулевого)
+        /// </summary>
+        /// <param name="type">Тип комиссии</param>
+        /// <param name="i">Месяц</param>
+        /// <returns>Комиссия на указанный месяц</returns>
+        private double calc_sp(ServicePaymentType type = ServicePaymentType.NoFee, int i = 0)
+        {
+            if (Data.ServicePaymentType == ServicePaymentType.NoFee)
+            {
+                return 0;
+            }
+            else if (Data.ServicePaymentType == ServicePaymentType.Amount)
+            {
+                return Data.spValue * Data.S / 100;
+            }
+            else if (Data.ServicePaymentType == ServicePaymentType.Residual)
+            {
+                return Data.spValue * Data.PaymentLeft[i] / 100;
+            }
+            else
+            {
+                throw new ArgumentException("Тип комиссии в неверном формате.");
+            }
+        }
+
+        /// <summary>
+        /// Расчитывает все необходимые значения и заносит их в хранилище
+        /// </summary>
+        /// <param name="type"></param>
+        public void Calculate(PaymentType type)
+        {
+            Data.PaymentType = type;
+            for (int i = 0; i < Data.N; i++)
+            {
+                // Остатока долга
+                if (i == 0)
+                {
+                    Data.PaymentLeft[0] = Data.S;
+                }
+                else
+                {
+                    Data.PaymentLeft[i] = Data.PaymentLeft[i - 1] - Data.generalPayment[i - 1]; // Остаток долга
+                }
+
+                if (type == PaymentType.Differentiated)
+                {
+                    Data.generalPayment[i] = calc_b(Data.S, Data.N);    // Основной платёж
+                    Data.p[i] = calc_p(Data.PaymentLeft[i], Data.P);    // Начисленные проценты
+                    Data.sp[i] = calc_sp(Data.ServicePaymentType, i);   // Комиссия
+                    Data.payment[i] = Data.generalPayment[i] + Data.p[i] + Data.sp[i];  // Полный платёж за месяц
+                }
+                else if (type == PaymentType.Annuity)
+                {
+                    Data.generalPayment[i] = calc_s(calc_x(Data.S,Data.P,Data.N),calc_Pn(Data.PaymentLeft[i],Data.P));    // Основной платёж
+                    Data.p[i] = calc_Pn(Data.PaymentLeft[i],Data.P);    // Начисленные проценты
+                    Data.sp[i] = calc_sp(Data.ServicePaymentType, i);   // Комиссия
+                    Data.payment[i] = calc_x(Data.S, Data.P, Data.N) + Data.sp[i];  // Полный платёж за месяц
+                }
+            }
+        }
+
+        /// <summary>
         /// Создаёт таблицу "График выплат"
         /// </summary>
         /// <returns>График выплат</returns>
-        public DataTable createPaymentGraph(PaymentType type)
+        public DataView createPaymentGraph()
         {
             DataTable table = new DataTable("График выплат");
 
@@ -130,114 +173,42 @@ namespace Bank
 
             string format = "#.##";
 
-            double sp = 0;
-            double left = Data.S;
+            //table.Columns[0].AutoIncrement = true;
+            //table.Columns[0].AutoIncrementSeed = 1;
+            //table.Columns[0].AutoIncrementStep = 1;
 
-            if (Data.ServicePaymentType == ServicePaymentType.Amount)
+            for (int i = 0; i < Data.N; i++)
             {
-                sp = Data.sp*Data.S/100;
-            }
-            else if (Data.ServicePaymentType == ServicePaymentType.Residual)
-            {
-                sp = Data.sp*left/100;
-            }
+                DataRow dr = table.NewRow();
 
-            double[] item = new double[4];
-
-            if (type == PaymentType.Differentiated)
-            {
-                for (int i = 0; i < Data.N; i++)
+                dr.ItemArray = new object[]
                 {
-                    item[0] += Data.b;
-                    item[1] += calc_p(calc_Sn(Data.S, Data.b, i), Data.P);
-                    item[2] += sp;
-                    item[3] += Data.b + calc_p(calc_Sn(Data.S, Data.b, i), Data.P) + sp;
-
-                    DataRow dr = table.NewRow();
-
-                    dr.ItemArray = new object[]
-                    {
                         i + 1,  // Номер месяца
-                        left.ToString(format),  //Остаток платежа
-                        Data.b.ToString(format),    // Основной платёж
-                        calc_p(calc_Sn(Data.S, Data.b, i), Data.P).ToString(format),    // Начисленные проценты
-                        sp.ToString(format), // Комиссия
-                        (Data.b + calc_p(calc_Sn(Data.S, Data.b, i), Data.P) + sp).ToString(format) // Всего за платёж
-                    };
-
-                    table.Rows.Add(dr);
-                    left -= Data.b;
-
-                    if (Data.ServicePaymentType == ServicePaymentType.Residual)
-                    {
-                        sp = Data.sp*left/100;
-                    }
-                }
-
-                DataRow drEnd = table.NewRow();
-
-                drEnd.ItemArray = new object[]
-                {
-                    "Итого",
-                    "-",
-                    item[0].ToString(format),
-                    item[1].ToString(format),
-                    item[2].ToString(format),
-                    item[3].ToString(format)
-
+                        Data.PaymentLeft[i].ToString(format),  //Остаток платежа
+                        Data.generalPayment[i].ToString(format),    // Основной платёж
+                        Data.p[i].ToString(format),    // Начисленные проценты
+                        Data.sp[i].ToString(format), // Комиссия
+                        Data.payment[i].ToString(format) // Всего за платёж
                 };
 
-                table.Rows.Add(drEnd);
-
+                table.Rows.Add(dr);
             }
-            else
+
+            // Последняя строка
+            DataRow drEnd = table.NewRow();
+            drEnd.ItemArray = new object[]
             {
-                for (int i = 0; i < Data.N; i++)
-                {
-                    item[0] += calc_s(calc_x(Data.S, Data.P, Data.N), calc_Pn(left, Data.P));
-                    item[1] += calc_Pn(left, Data.P);
-                    item[2] += sp;
-                    item[3] += calc_x(Data.S, Data.P, Data.N) + sp;
-
-                    DataRow dr = table.NewRow();
-                    dr.ItemArray = new object[]
-                    {
-                        i + 1,  // Номер месяца
-                        left.ToString(format), // Остаток
-                        calc_s(calc_x(Data.S,Data.P,Data.N),calc_Pn(left,Data.P)).ToString(format), // Основной платёж
-                        calc_Pn(left,Data.P).ToString(format),  // Начисленные проценты
-                        sp.ToString(format),
-                        (calc_x(Data.S,Data.P,Data.N) + sp).ToString(format)   // Всего за платёж
-                    };
-
-                    table.Rows.Add(dr);
-                    left -= calc_s(calc_x(Data.S,Data.P,Data.N),calc_Pn(left,Data.P));
-
-                    if (Data.ServicePaymentType == ServicePaymentType.Residual)
-                    {
-                        sp = Data.sp * left / 100;
-                    }
-                }
-
-                DataRow drEnd = table.NewRow();
-
-                drEnd.ItemArray = new object[]
-                {
                     "Итого",
                     "-",
-                    item[0].ToString(format),
-                    item[1].ToString(format),
-                    item[2].ToString(format),
-                    item[3].ToString(format)
+                    Data.generalPayment.Sum().ToString(format), // Сумма основных платежей
+                    Data.pSum.ToString(format), // Сумма начисленных процентов
+                    Data.sp.Sum().ToString(format), // Сумма комиссионных выплат
+                    Data.paymentsSum.ToString(format)   // Всего уплачено
+            };
 
-                };
+            table.Rows.Add(drEnd);
 
-                table.Rows.Add(drEnd);
-            }
-
-
-
-            return table;
+            return table.DefaultView;
         }
     }
 }

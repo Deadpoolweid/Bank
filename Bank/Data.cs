@@ -8,6 +8,8 @@ namespace Bank
 {
     class Data
     {
+        #region Ввведённые данные
+
         /// <summary>
         /// Сумма кредита
         /// </summary>
@@ -16,7 +18,7 @@ namespace Bank
         /// <summary>
         /// Количество месяцев
         /// </summary>
-        public double N;
+        public int N;
 
         /// <summary>
         /// Годовая ставка
@@ -24,43 +26,78 @@ namespace Bank
         public double P;
 
         /// <summary>
-        /// Основной платёж
+        /// Тип платежа
         /// </summary>
-        public double b;
-
-        /// <summary>
-        /// Сохранение данныъ
-        /// </summary>
-        /// <param name="s">Сумма кредита</param>
-        /// <param name="n">Количество месяцев</param>
-        /// <param name="p">Годовая ставка</param>
-        /// <param name="b">Основной платёж</param>
-        public Data(double s, double n, double p, double b)
-        {
-            S = s;
-            N = n;
-            P = p;
-            this.b = b;
-        }
-
-        /// <summary>
-        /// Полная сумма выплат
-        /// </summary>
-        public double paymentsSum;
-
-        /// <summary>
-        /// Основной платёж
-        /// </summary>
-        public double generalPayment;
-
-        /// <summary>
-        /// Комисиия
-        /// </summary>
-        public double sp;
+        public PaymentType PaymentType;
 
         /// <summary>
         /// Тип обслуживания счёта
         /// </summary>
         public ServicePaymentType ServicePaymentType = ServicePaymentType.NoFee;
+
+        /// <summary>
+        /// Величина комиссии
+        /// </summary>
+        public double spValue;
+        #endregion
+
+        /// <summary>
+        /// Сохранение данных
+        /// </summary>
+        /// <param name="s">Сумма кредита</param>
+        /// <param name="n">Количество месяцев</param>
+        /// <param name="p">Годовая ставка</param>
+        /// <param name="b">Основной платёж</param>
+        /// <param name="type">Тип платежа</param>
+        /// <param name="sp">Величина комиссии</param>
+        public Data(double s, int n, double p, ServicePaymentType type, double sp)
+        {
+            S = s;
+            N = n;
+            P = p;
+            ServicePaymentType = type;
+            spValue = sp;
+
+            this.sp = new double[N];
+            PaymentLeft = new double[N];
+            generalPayment = new double[N];
+            this.p = new double[N];
+            payment = new double[N];
+        }
+
+        /// <summary>
+        /// Основной платёж
+        /// </summary>
+        public double[] generalPayment;
+
+        /// <summary>
+        /// Комисиия
+        /// </summary>
+        public double[] sp;
+
+        /// <summary>
+        /// Остаток задолженности
+        /// </summary>
+        public double[] PaymentLeft;
+
+        /// <summary>
+        /// Начисленные проценты
+        /// </summary>
+        public double[] p;
+
+        /// <summary>
+        /// Полный платёж
+        /// </summary>
+        public double[] payment;
+
+        /// <summary>
+        /// Полная сумма выплат
+        /// </summary>
+        public double paymentsSum => payment.Sum();
+
+        /// <summary>
+        /// Полная сумма начисленных процентов
+        /// </summary>
+        public double pSum => p.Sum();
     }
 }
