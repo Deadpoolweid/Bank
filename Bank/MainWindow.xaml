@@ -3,17 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Bank"
         mc:Ignorable="d"
         Title="Кредитные расчёты" SizeToContent="WidthAndHeight" WindowState="Maximized" Width="{DynamicResource {x:Static SystemParameters.MaximizedPrimaryScreenWidthKey}}" Height="{DynamicResource {x:Static SystemParameters.MaximizedPrimaryScreenHeightKey}}" KeyDown="Window_KeyDown">
-    <Grid x:Name="mainGrid">
+    <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
-        <DockPanel x:Name="dpTop" Grid.Row="0" Dock="Top" HorizontalAlignment="Left" Height="18" LastChildFill="False" VerticalAlignment="Top" Width="1376" MinWidth="{DynamicResource {x:Static SystemParameters.MaximizedPrimaryScreenWidthKey}}" Margin="0,0,-8,0">
-            <Menu x:Name="menu" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="{DynamicResource {x:Static SystemParameters.MaximizedPrimaryScreenWidthKey}}" Width="1127">
+        <DockPanel x:Name="DpTop" Grid.Row="0" Dock="Top" HorizontalAlignment="Left" Height="18" LastChildFill="False" VerticalAlignment="Top" Width="1376" MinWidth="{DynamicResource {x:Static SystemParameters.MaximizedPrimaryScreenWidthKey}}" Margin="0,0,-8,0">
+            <Menu x:Name="Menu" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="{DynamicResource {x:Static SystemParameters.MaximizedPrimaryScreenWidthKey}}" Width="1127">
                 <MenuItem Header="Файл" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center">
                     <MenuItem Header="Выход" HorizontalAlignment="Left" Width="140"/>
                 </MenuItem>
@@ -22,43 +21,43 @@
         <StackPanel Grid.Row="1" Margin="0,0,-8,0" VerticalAlignment="Top" Orientation="Horizontal" MinWidth="{DynamicResource {x:Static SystemParameters.MaximizedPrimaryScreenWidthKey}}">
             <DockPanel  Dock="Left" HorizontalAlignment="Center">
                 <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top">
-                    <Label x:Name="label" Content="Сумма покупки" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                    <Label x:Name="label1" Content="Дата получения" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                    <Label x:Name="label2" Content="Срок кредита" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                    <Label x:Name="label3" Content="Годовой процент" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    <Label x:Name="Label" Content="Сумма покупки" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    <Label x:Name="Label1" Content="Дата получения" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    <Label x:Name="Label2" Content="Срок кредита" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    <Label x:Name="Label3" Content="Годовой процент" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 </StackPanel>
                 <StackPanel HorizontalAlignment="Left" Height="100" Margin="0,5,0,0" VerticalAlignment="Top" Width="121">
-                    <TextBox x:Name="tS" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="100000"/>
-                    <DatePicker x:Name="dpDate"/>
-                    <TextBox x:Name="tN" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="24"/>
-                    <TextBox x:Name="tP" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="10"/>
+                    <TextBox x:Name="Ts" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="100000"/>
+                    <DatePicker x:Name="DpDate"/>
+                    <TextBox x:Name="Tn" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="24"/>
+                    <TextBox x:Name="Tp" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="10"/>
                 </StackPanel>
             </DockPanel>
             <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Width="331">
                 <StackPanel Height="23" VerticalAlignment="Top" Orientation="Horizontal">
-                    <Label x:Name="label4" Content="Тип платежа" HorizontalAlignment="Left" VerticalAlignment="Top" Width="83"/>
-                    <ComboBox x:Name="cbPayment" HorizontalAlignment="Left" Width="140" Height="23" VerticalAlignment="Top" SelectionChanged="cbPayment_SelectionChanged">
+                    <Label x:Name="Label4" Content="Тип платежа" HorizontalAlignment="Left" VerticalAlignment="Top" Width="83"/>
+                    <ComboBox x:Name="CbPayment" HorizontalAlignment="Left" Width="140" Height="23" VerticalAlignment="Top" SelectionChanged="cbPayment_SelectionChanged">
                         <ComboBoxItem Content="Дифференцированный" Margin="0,0,47,0"/>
                         <ComboBoxItem Content="Аннуитетный" Margin="0,0,46,0"/>
                         <ComboBoxItem Content="Равными частями"/>
                     </ComboBox>
-                    <TextBox x:Name="tEqualPayment" TextWrapping="Wrap" Width="109" IsEnabled="False" Text="0"/>
+                    <TextBox x:Name="TEqualPayment" TextWrapping="Wrap" Width="109" IsEnabled="False" Text="0"/>
                 </StackPanel>
                 <StackPanel Height="52" VerticalAlignment="Top" Orientation="Horizontal">
-                    <CheckBox x:Name="checkBox" Content="Обслуживание счёта" HorizontalAlignment="Left" Checked="checkBox_Checked" Unchecked="checkBox_Unchecked" Width="158" VerticalAlignment="Center"/>
+                    <CheckBox x:Name="CheckBox" Content="Обслуживание счёта" HorizontalAlignment="Left" Checked="checkBox_Checked" Unchecked="checkBox_Unchecked" Width="158" VerticalAlignment="Center"/>
                     <StackPanel Width="171" Margin="0,6,0,0" VerticalAlignment="Center" Height="46">
-                        <ComboBox x:Name="cbServicePayment" RenderTransformOrigin="0.488,2.023" IsEnabled="False">
+                        <ComboBox x:Name="CbServicePayment" RenderTransformOrigin="0.488,2.023" IsEnabled="False">
                             <ComboBoxItem Content="От суммы кредита" HorizontalAlignment="Left" Width="169" ToolTip=""/>
                             <ComboBoxItem Content="От остатка " HorizontalAlignment="Left" Width="169" ToolTip=""/>
                         </ComboBox>
-                        <TextBox x:Name="tServiceSum" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" IsEnabled="False" Focusable="False" Text="0.9"/>
+                        <TextBox x:Name="TServiceSum" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" IsEnabled="False" Focusable="False" Text="0.9"/>
                     </StackPanel>
                 </StackPanel>
-                <Button x:Name="bCalculate" Content="Расчитать" VerticalAlignment="Top" Click="bCalculate_Click"/>
+                <Button x:Name="BCalculate" Content="Расчитать" VerticalAlignment="Top" Click="bCalculate_Click"/>
             </StackPanel>
         </StackPanel>
-        <DockPanel x:Name="dpBottom" Grid.Row="2" Dock="Bottom" HorizontalAlignment="Left" LastChildFill="False" Margin="0,10,0,0" VerticalAlignment="Top" Height="580" Width="1368">
-            <DataGrid x:Name="dgResults" VerticalAlignment="Top" HorizontalAlignment="Left" MinWidth="{DynamicResource {x:Static SystemParameters.MaximizedPrimaryScreenWidthKey}}" DockPanel.Dock="Top"/>
+        <DockPanel x:Name="DpBottom" Grid.Row="2" Dock="Bottom" HorizontalAlignment="Left" LastChildFill="False" Margin="0,10,0,0" VerticalAlignment="Top" Height="580" Width="1368">
+            <DataGrid x:Name="DgResults" VerticalAlignment="Top" HorizontalAlignment="Left" MinWidth="{DynamicResource {x:Static SystemParameters.MaximizedPrimaryScreenWidthKey}}" DockPanel.Dock="Top"/>
         </DockPanel>
 
     </Grid>

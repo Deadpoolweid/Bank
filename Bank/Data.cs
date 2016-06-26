@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Bank
 {
@@ -38,12 +35,12 @@ namespace Bank
         /// <summary>
         /// Тип обслуживания счёта
         /// </summary>
-        public ServicePaymentType ServicePaymentType = ServicePaymentType.NoFee;
+        public ServicePaymentType ServicePaymentType;
 
         /// <summary>
         /// Величина комиссии
         /// </summary>
-        public double spValue;
+        public double SpValue;
 
         /// <summary>
         /// Величина равного платежа
@@ -57,7 +54,6 @@ namespace Bank
         /// <param name="s">Сумма кредита</param>
         /// <param name="n">Количество месяцев</param>
         /// <param name="p">Годовая ставка</param>
-        /// <param name="b">Основной платёж</param>
         /// <param name="type">Тип платежа</param>
         /// <param name="sp">Величина комиссии</param>
         public Data(double s, int n, double p, ServicePaymentType type, double sp)
@@ -66,25 +62,25 @@ namespace Bank
             N = n;
             P = p;
             ServicePaymentType = type;
-            spValue = sp;
+            SpValue = sp;
 
-            this.sp = new double[N];
+            Sp = new double[N];
             PaymentLeft = new double[N];
-            generalPayment = new double[N];
+            GeneralPayment = new double[N];
             this.p = new double[N];
-            payment = new double[N];
+            Payment = new double[N];
             Dates = new DateTime[N];
         }
 
         /// <summary>
         /// Основной платёж
         /// </summary>
-        public double[] generalPayment;
+        public double[] GeneralPayment;
 
         /// <summary>
         /// Комисиия
         /// </summary>
-        public double[] sp;
+        public double[] Sp;
 
         /// <summary>
         /// Остаток задолженности
@@ -94,22 +90,23 @@ namespace Bank
         /// <summary>
         /// Начисленные проценты
         /// </summary>
+        // ReSharper disable once InconsistentNaming
         public double[] p;
 
         /// <summary>
         /// Полный платёж
         /// </summary>
-        public double[] payment;
+        public double[] Payment;
 
         /// <summary>
         /// Полная сумма выплат
         /// </summary>
-        public double paymentsSum => payment.Sum();
+        public double PaymentsSum => Payment.Sum();
 
         /// <summary>
         /// Полная сумма начисленных процентов
         /// </summary>
-        public double pSum => p.Sum();
+        public double PSum => p.Sum();
 
         /// <summary>
         /// Все месяцы уплаты

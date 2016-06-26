@@ -1,38 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Bank
 {
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         public MainWindow()
         {
             InitializeComponent();
 
-            cbPayment.SelectedIndex = 0;
-            cbServicePayment.SelectedIndex = 0;
-            dpDate.DisplayDate = DateTime.Today;
+            CbPayment.SelectedIndex = 0;
+            CbServicePayment.SelectedIndex = 0;
+            DpDate.DisplayDate = DateTime.Today;
         }
 
-        Core core = new Core();
+        readonly Core _core = new Core();
 
         private void bCalculate_Click(object sender, RoutedEventArgs e)
         {
@@ -48,13 +40,11 @@ namespace Bank
                 return;
             }
 
-            //MessageBox.Show("Данные введены верно.");
-
-            ServicePaymentType type = ServicePaymentType.NoFee;
+            var type = ServicePaymentType.NoFee;
             double sum = 0;
-            if (checkBox.IsChecked == true)
+            if (CheckBox.IsChecked == true)
             {
-                switch (cbServicePayment.SelectedIndex)
+                switch (CbServicePayment.SelectedIndex)
                 {
                     case 0:
                         type = ServicePaymentType.Amount;
@@ -66,29 +56,16 @@ namespace Bank
                         type = ServicePaymentType.NoFee;
                         break;
                 }
-                sum = Double.Parse(tServiceSum.Text,CultureInfo.InvariantCulture);
+                sum = double.Parse(TServiceSum.Text,CultureInfo.InvariantCulture);
             }
 
-            core.SaveData(Convert.ToDouble(tS.Text, CultureInfo.InvariantCulture), Convert.ToDouble(tP.Text, CultureInfo.InvariantCulture),
-Convert.ToInt32(tN.Text, CultureInfo.InvariantCulture), type, sum, dpDate.DisplayDate,Convert.ToDouble(tEqualPayment.Text,CultureInfo.InvariantCulture));
+            _core.SaveData(Convert.ToDouble(Ts.Text, CultureInfo.InvariantCulture), Convert.ToDouble(Tp.Text, CultureInfo.InvariantCulture),
+Convert.ToInt32(Tn.Text, CultureInfo.InvariantCulture), type, sum, DpDate.DisplayDate,Convert.ToDouble(TEqualPayment.Text,CultureInfo.InvariantCulture));
 
-            PaymentType pType;
-            if (cbPayment.SelectedIndex == 0)
-            {
-                pType = PaymentType.Differentiated;
-            }
-            else if (cbPayment.SelectedIndex == 1)
-            {
-                pType = PaymentType.Annuity;
-            }
-            else
-            {
-                pType = PaymentType.Equal;
-            }
+            var pType = (PaymentType)CbPayment.SelectedIndex + 1;
+            _core.Calculate(pType);
 
-            core.Calculate(pType);
-
-            dgResults.ItemsSource = core.createPaymentGraph();
+            DgResults.ItemsSource = _core.CreatePaymentGraph();
         }
 
         /// <summary>
@@ -97,86 +74,91 @@ Convert.ToInt32(tN.Text, CultureInfo.InvariantCulture), type, sum, dpDate.Displa
         /// <returns>Результат проверки</returns>
         private bool CheckInput()
         {
-            bool result = false;
+            Ts.Foreground = CheckReal(Ts.Text) ? Brushes.Green : Brushes.Red;
 
-            tS.Foreground = checkReal(tS.Text) ? Brushes.Green : Brushes.Red;
+            Tn.Foreground = CheckInt(Tn.Text) ? Brushes.Green : Brushes.Red;
 
-            tN.Foreground = checkInt(tN.Text) ? Brushes.Green : Brushes.Red;
+            Tp.Foreground = CheckPercent(Tp.Text) ? Brushes.Green : Brushes.Red;
 
-            tP.Foreground = checkPercent(tP.Text) ? Brushes.Green : Brushes.Red;
+            TServiceSum.Foreground = CheckReal(TServiceSum.Text) ? Brushes.Green : Brushes.Red;
 
-            tServiceSum.Foreground = checkReal(tServiceSum.Text) ? Brushes.Green : Brushes.Red;
+            TEqualPayment.Foreground = CheckReal(TEqualPayment.Text) ? Brushes.Green : Brushes.Red;
 
-            tEqualPayment.Foreground = checkReal(tEqualPayment.Text) ? Brushes.Green : Brushes.Red;
-
-            return checkReal(tS.Text) && checkInt(tN.Text) && checkPercent(tP.Text) && checkReal(tServiceSum.Text) 
-                && checkReal(tEqualPayment.Text);
+            return CheckReal(Ts.Text) && CheckInt(Tn.Text) && CheckPercent(Tp.Text) && CheckReal(TServiceSum.Text) 
+                && CheckReal(TEqualPayment.Text);
         }
 
-        private bool checkReal(string line)
+        /// <summary>
+        /// Проверяет строку на соответствие вещественному числу
+        /// </summary>
+        /// <param name="line">Проверяемая строка</param>
+        /// <returns>Результат проверки</returns>
+        private static bool CheckReal(string line)
         {
             return Regex.IsMatch(line, "^\\d*\\.?\\d+\\z");
         }
 
-        private bool checkInt(string line)
+        /// <summary>
+        /// Проверяет строку на соответствие целому числу
+        /// </summary>
+        /// <param name="line">Проверяемая строка</param>
+        /// <returns>Результат проверки</returns>
+        private static bool CheckInt(string line)
         {
             return Regex.IsMatch(line, "^\\d+\\z");
         }
 
-        private bool checkPercent(string line)
+        /// <summary>
+        /// Проверяет строку на соответствие процентам (в том числе дробным)
+        /// </summary>
+        /// <param name="line">Проверяемая строка</param>
+        /// <returns>Результат проверки</returns>
+        private static bool CheckPercent(string line)
         {
             return Regex.IsMatch(line, "^[1]?[1-9]?\\d\\.?\\d+\\z");
         }
 
+        /// <summary>
+        /// Проверяет все Textbox элементы на пустую строку
+        /// </summary>
+        /// <returns>Результат проверки</returns>
         private bool CheckForNull()
         {
-            tS.Background = tS.Text == "" ? Brushes.Yellow : Brushes.Transparent;
+            Ts.Background = Ts.Text == "" ? Brushes.Yellow : Brushes.Transparent;
 
-            tEqualPayment.Background = tEqualPayment.Text == "" ? Brushes.Yellow : Brushes.Transparent;
+            TEqualPayment.Background = TEqualPayment.Text == "" ? Brushes.Yellow : Brushes.Transparent;
 
-            tN.Background = tN.Text == "" ? Brushes.Yellow : Brushes.Transparent;
+            Tn.Background = Tn.Text == "" ? Brushes.Yellow : Brushes.Transparent;
 
-            tP.Background = tP.Text == "" ? Brushes.Yellow : Brushes.Transparent;
+            Tp.Background = Tp.Text == "" ? Brushes.Yellow : Brushes.Transparent;
 
-            tServiceSum.Background = tServiceSum.Text == "" ? Brushes.Yellow : Brushes.Transparent;
+            TServiceSum.Background = TServiceSum.Text == "" ? Brushes.Yellow : Brushes.Transparent;
 
-            List<string> texts = new List<string>(5);
+            var texts = new List<string>(5) {Ts.Text, TEqualPayment.Text, Tn.Text, Tp.Text, TServiceSum.Text};
 
-            texts.Add(tS.Text);
-            texts.Add(tEqualPayment.Text);
-            texts.Add(tN.Text);
-            texts.Add(tP.Text);
-            texts.Add(tServiceSum.Text);
 
             return texts.All(t => t != "");
         }
 
         private void checkBox_Checked(object sender, RoutedEventArgs e)
         {
-            tServiceSum.IsEnabled = true;
-            tServiceSum.Focusable = true;
+            TServiceSum.IsEnabled = true;
+            TServiceSum.Focusable = true;
 
-            cbServicePayment.IsEnabled = true;
+            CbServicePayment.IsEnabled = true;
         }
 
         private void checkBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            tServiceSum.IsEnabled = false;
-            tServiceSum.Focusable = false;
+            TServiceSum.IsEnabled = false;
+            TServiceSum.Focusable = false;
 
-            cbServicePayment.IsEnabled = false;
+            CbServicePayment.IsEnabled = false;
         }
 
         private void cbPayment_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (cbPayment.SelectedIndex == 2)
-            {
-                tEqualPayment.IsEnabled = true;
-            }
-            else
-            {
-                tEqualPayment.IsEnabled = false;
-            }
+            TEqualPayment.IsEnabled = CbPayment.SelectedIndex == 2;
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
