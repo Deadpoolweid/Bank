@@ -36,7 +36,13 @@ namespace Bank
 
         private void bCalculate_Click(object sender, RoutedEventArgs e)
         {
-            if (inputCheck() == false)
+            if (CheckForNull() == false)
+            {
+                MessageBox.Show("Оставлены пустые поля.");
+                return;
+            }
+
+            if (CheckInput() == false)
             {
                 MessageBox.Show("Данные введены неверно.");
                 return;
@@ -85,28 +91,64 @@ Convert.ToInt32(tN.Text, CultureInfo.InvariantCulture), type, sum, dpDate.Displa
             dgResults.ItemsSource = core.createPaymentGraph();
         }
 
-
-        // TODO Добавить недостающие проверки ввода
         /// <summary>
         /// Проверка на правильность введённых данных во всех полях
         /// </summary>
         /// <returns>Результат проверки</returns>
-        private bool inputCheck()
+        private bool CheckInput()
         {
-            var check = Regex.IsMatch(tS.Text, "\\d*\\.?\\d+");
+            bool result = false;
 
+            tS.Foreground = checkReal(tS.Text) ? Brushes.Green : Brushes.Red;
 
-            if (!Regex.IsMatch(tN.Text, "\\d+"))
-            {
-                check = false;
-            }
+            tN.Foreground = checkInt(tN.Text) ? Brushes.Green : Brushes.Red;
 
-            if (!Regex.IsMatch(tP.Text, "[1]?[1-9]?\\d"))
-            {
-                check = false;
-            }
+            tP.Foreground = checkPercent(tP.Text) ? Brushes.Green : Brushes.Red;
 
-            return check;
+            tServiceSum.Foreground = checkReal(tServiceSum.Text) ? Brushes.Green : Brushes.Red;
+
+            tEqualPayment.Foreground = checkReal(tEqualPayment.Text) ? Brushes.Green : Brushes.Red;
+
+            return checkReal(tS.Text) && checkInt(tN.Text) && checkPercent(tP.Text) && checkReal(tServiceSum.Text) 
+                && checkReal(tEqualPayment.Text);
+        }
+
+        private bool checkReal(string line)
+        {
+            return Regex.IsMatch(line, "^\\d*\\.?\\d+\\z");
+        }
+
+        private bool checkInt(string line)
+        {
+            return Regex.IsMatch(line, "^\\d+\\z");
+        }
+
+        private bool checkPercent(string line)
+        {
+            return Regex.IsMatch(line, "^[1]?[1-9]?\\d\\.?\\d+\\z");
+        }
+
+        private bool CheckForNull()
+        {
+            tS.Background = tS.Text == "" ? Brushes.Yellow : Brushes.Transparent;
+
+            tEqualPayment.Background = tEqualPayment.Text == "" ? Brushes.Yellow : Brushes.Transparent;
+
+            tN.Background = tN.Text == "" ? Brushes.Yellow : Brushes.Transparent;
+
+            tP.Background = tP.Text == "" ? Brushes.Yellow : Brushes.Transparent;
+
+            tServiceSum.Background = tServiceSum.Text == "" ? Brushes.Yellow : Brushes.Transparent;
+
+            List<string> texts = new List<string>(5);
+
+            texts.Add(tS.Text);
+            texts.Add(tEqualPayment.Text);
+            texts.Add(tN.Text);
+            texts.Add(tP.Text);
+            texts.Add(tServiceSum.Text);
+
+            return texts.All(t => t != "");
         }
 
         private void checkBox_Checked(object sender, RoutedEventArgs e)
@@ -134,6 +176,14 @@ Convert.ToInt32(tN.Text, CultureInfo.InvariantCulture), type, sum, dpDate.Displa
             else
             {
                 tEqualPayment.IsEnabled = false;
+            }
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                bCalculate_Click(e, new RoutedEventArgs());
             }
         }
     }
