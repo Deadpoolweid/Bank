@@ -6,6 +6,7 @@
     public enum PaymentType
     {
         Differentiated,
-        Annuity
+        Annuity,
+        Equal
     }
 }

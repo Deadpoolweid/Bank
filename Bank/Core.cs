@@ -21,9 +21,11 @@ namespace Bank
         /// <param name="type">Тип платежа</param>
         /// <param name="sType">Тип комиссии</param>
         /// <param name="sPayment">Размер комиссии</param>
-        public void SaveData(double S, double P, int N, ServicePaymentType type = ServicePaymentType.NoFee, double sPayment = 0)
+        public void SaveData(double S, double P, int N, ServicePaymentType type = ServicePaymentType.NoFee, double sPayment = 0, DateTime date = default(DateTime), double EqualPayment = 0)
         {
             Data data = new Data(S,N,P/100, type, sPayment);
+            data.StartDate = date;
+            data.EqualPayment = EqualPayment;
             Data = data;
         }
 
@@ -94,6 +96,11 @@ namespace Bank
 
         #endregion
 
+        #region Расчёты по платежам равными частями
+
+
+        #endregion
+
         /// <summary>
         /// Расчёт комиссии на указанный месяц(Начиная с нулевого)
         /// </summary>
@@ -139,19 +146,40 @@ namespace Bank
                     Data.PaymentLeft[i] = Data.PaymentLeft[i - 1] - Data.generalPayment[i - 1]; // Остаток долга
                 }
 
+                // Даты платежа
+                if (i == 0)
+                {
+                    Data.Dates[0] = Data.StartDate;
+                }
+                else
+                {
+                    Data.Dates[i] = Data.Dates[i - 1].AddMonths(1);
+                }
+
+                Data.sp[i] = calc_sp(Data.ServicePaymentType, i);   // Комиссия
+
                 if (type == PaymentType.Differentiated)
                 {
                     Data.generalPayment[i] = calc_b(Data.S, Data.N);    // Основной платёж
                     Data.p[i] = calc_p(Data.PaymentLeft[i], Data.P);    // Начисленные проценты
-                    Data.sp[i] = calc_sp(Data.ServicePaymentType, i);   // Комиссия
                     Data.payment[i] = Data.generalPayment[i] + Data.p[i] + Data.sp[i];  // Полный платёж за месяц
                 }
                 else if (type == PaymentType.Annuity)
                 {
                     Data.generalPayment[i] = calc_s(calc_x(Data.S,Data.P,Data.N),calc_Pn(Data.PaymentLeft[i],Data.P));    // Основной платёж
                     Data.p[i] = calc_Pn(Data.PaymentLeft[i],Data.P);    // Начисленные проценты
-                    Data.sp[i] = calc_sp(Data.ServicePaymentType, i);   // Комиссия
                     Data.payment[i] = calc_x(Data.S, Data.P, Data.N) + Data.sp[i];  // Полный платёж за месяц
+                }
+                else if (type == PaymentType.Equal)
+                {
+                    Data.p[i] = calc_p(Data.PaymentLeft[i], Data.P);    // Начисленные проценты
+                    Data.payment[i] = Data.PaymentLeft[i] > Data.EqualPayment ? Data.EqualPayment : Data.PaymentLeft[i] + Data.p[i];    // Полный платёж за месяц
+                    Data.generalPayment[i] = Data.payment[i] - Data.p[i] - Data.sp[i];  // Основной платёж
+
+                    if (Data.PaymentLeft[i] == 0)
+                    {
+                        Data.N = i;
+                    }
                 }
             }
         }
@@ -165,6 +193,7 @@ namespace Bank
             DataTable table = new DataTable("График выплат");
 
             table.Columns.Add("Месяц №");
+            table.Columns.Add("Дата");
             table.Columns.Add("Остаток");
             table.Columns.Add("Основной платёж");
             table.Columns.Add("Проценты");
@@ -184,6 +213,7 @@ namespace Bank
                 dr.ItemArray = new object[]
                 {
                         i + 1,  // Номер месяца
+                        Data.Dates[i].Date.ToShortDateString(),
                         Data.PaymentLeft[i].ToString(format),  //Остаток платежа
                         Data.generalPayment[i].ToString(format),    // Основной платёж
                         Data.p[i].ToString(format),    // Начисленные проценты
@@ -199,6 +229,7 @@ namespace Bank
             drEnd.ItemArray = new object[]
             {
                     "Итого",
+                    "-",
                     "-",
                     Data.generalPayment.Sum().ToString(format), // Сумма основных платежей
                     Data.pSum.ToString(format), // Сумма начисленных процентов

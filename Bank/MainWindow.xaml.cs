@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -28,6 +29,7 @@ namespace Bank
 
             cbPayment.SelectedIndex = 0;
             cbServicePayment.SelectedIndex = 0;
+            dpDate.DisplayDate = DateTime.Today;
         }
 
         Core core = new Core();
@@ -54,21 +56,28 @@ namespace Bank
                     case 1:
                         type = ServicePaymentType.Residual;
                         break;
+                    default:
+                        type = ServicePaymentType.NoFee;
+                        break;
                 }
                 sum = Double.Parse(tServiceSum.Text,CultureInfo.InvariantCulture);
             }
 
             core.SaveData(Convert.ToDouble(tS.Text, CultureInfo.InvariantCulture), Convert.ToDouble(tP.Text, CultureInfo.InvariantCulture),
-Convert.ToInt32(tN.Text, CultureInfo.InvariantCulture), type, sum);
+Convert.ToInt32(tN.Text, CultureInfo.InvariantCulture), type, sum, dpDate.DisplayDate,Convert.ToDouble(tEqualPayment.Text,CultureInfo.InvariantCulture));
 
             PaymentType pType;
             if (cbPayment.SelectedIndex == 0)
             {
                 pType = PaymentType.Differentiated;
             }
-            else
+            else if (cbPayment.SelectedIndex == 1)
             {
                 pType = PaymentType.Annuity;
+            }
+            else
+            {
+                pType = PaymentType.Equal;
             }
 
             core.Calculate(pType);
@@ -114,6 +123,18 @@ Convert.ToInt32(tN.Text, CultureInfo.InvariantCulture), type, sum);
             tServiceSum.Focusable = false;
 
             cbServicePayment.IsEnabled = false;
+        }
+
+        private void cbPayment_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cbPayment.SelectedIndex == 2)
+            {
+                tEqualPayment.IsEnabled = true;
+            }
+            else
+            {
+                tEqualPayment.IsEnabled = false;
+            }
         }
     }
 }

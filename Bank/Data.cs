@@ -26,6 +26,11 @@ namespace Bank
         public double P;
 
         /// <summary>
+        /// Дата получения кредита
+        /// </summary>
+        public DateTime StartDate;
+
+        /// <summary>
         /// Тип платежа
         /// </summary>
         public PaymentType PaymentType;
@@ -39,6 +44,11 @@ namespace Bank
         /// Величина комиссии
         /// </summary>
         public double spValue;
+
+        /// <summary>
+        /// Величина равного платежа
+        /// </summary>
+        public double EqualPayment;
         #endregion
 
         /// <summary>
@@ -63,6 +73,7 @@ namespace Bank
             generalPayment = new double[N];
             this.p = new double[N];
             payment = new double[N];
+            Dates = new DateTime[N];
         }
 
         /// <summary>
@@ -99,5 +110,10 @@ namespace Bank
         /// Полная сумма начисленных процентов
         /// </summary>
         public double pSum => p.Sum();
+
+        /// <summary>
+        /// Все месяцы уплаты
+        /// </summary>
+        public DateTime[] Dates;
     }
 }

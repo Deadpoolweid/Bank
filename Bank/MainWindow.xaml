@@ -23,24 +23,26 @@
             <DockPanel  Dock="Left" HorizontalAlignment="Center">
                 <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top">
                     <Label x:Name="label" Content="Сумма покупки" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                    <Label x:Name="label1" Content="Первый взнос" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    <Label x:Name="label1" Content="Дата получения" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                     <Label x:Name="label2" Content="Срок кредита" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                     <Label x:Name="label3" Content="Годовой процент" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 </StackPanel>
                 <StackPanel HorizontalAlignment="Left" Height="100" Margin="0,5,0,0" VerticalAlignment="Top" Width="121">
                     <TextBox x:Name="tS" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="100000"/>
-                    <TextBox x:Name="textBox1" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                    <DatePicker x:Name="dpDate"/>
                     <TextBox x:Name="tN" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="24"/>
                     <TextBox x:Name="tP" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="10"/>
                 </StackPanel>
             </DockPanel>
             <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Width="331">
                 <StackPanel Height="23" VerticalAlignment="Top" Orientation="Horizontal">
-                    <Label x:Name="label4" Content="Тип платежа" HorizontalAlignment="Left" VerticalAlignment="Top" Width="109"/>
-                    <ComboBox x:Name="cbPayment" HorizontalAlignment="Left" Width="179">
-                        <ComboBoxItem Content="Дифференцированный"/>
-                        <ComboBoxItem Content="Аннуитетный"/>
+                    <Label x:Name="label4" Content="Тип платежа" HorizontalAlignment="Left" VerticalAlignment="Top" Width="83"/>
+                    <ComboBox x:Name="cbPayment" HorizontalAlignment="Left" Width="140" Height="23" VerticalAlignment="Top" SelectionChanged="cbPayment_SelectionChanged">
+                        <ComboBoxItem Content="Дифференцированный" Margin="0,0,47,0"/>
+                        <ComboBoxItem Content="Аннуитетный" Margin="0,0,46,0"/>
+                        <ComboBoxItem Content="Равными частями"/>
                     </ComboBox>
+                    <TextBox x:Name="tEqualPayment" TextWrapping="Wrap" Width="109" IsEnabled="False" Text="0"/>
                 </StackPanel>
                 <StackPanel Height="52" VerticalAlignment="Top" Orientation="Horizontal">
                     <CheckBox x:Name="checkBox" Content="Обслуживание счёта" HorizontalAlignment="Left" Checked="checkBox_Checked" Unchecked="checkBox_Unchecked" Width="158" VerticalAlignment="Center"/>
