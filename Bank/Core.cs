@@ -40,7 +40,10 @@ namespace Bank
         /// <param name="s">Размер кредита</param>
         /// <param name="n">Количество месяцев</param>
         /// <returns>Основной платёж</returns>
-        public double calc_b(double s, int n) => s/n;
+        public double calc_b(double s, int n)
+        {
+            return s/n;
+        }
 
         /// <summary>
         /// Расчёт остатка задолженности по дифф. платежу
@@ -49,7 +52,11 @@ namespace Bank
         /// <param name="b">Основной платёж</param>
         /// <param name="n">Количество прошедших периодов</param>
         /// <returns>Остаток задолженности</returns>
-        public double calc_Sn(double s, double b, double n) => s - (b*n);
+        public double calc_Sn(double s, double b, double n)
+        {
+            return s - (b*n);
+        }
+
         #endregion
 
         #region Расчёты по аннуитетному платёжу
@@ -73,7 +80,10 @@ namespace Bank
         /// <param name="x">Месячный платёж</param>
         /// <param name="pn">Проценты на момент n-ой выплаты</param>
         /// <returns>Выплата на погашение долга</returns>
-        public double calc_s(double x, double pn) => x - pn;
+        public double calc_s(double x, double pn)
+        {
+            return x - pn;
+        }
 
         #endregion
 
@@ -83,7 +93,10 @@ namespace Bank
         /// <param name="sn">Остаток задолженности</param>
         /// <param name="p">Годовая ставка</param>
         /// <returns>Начисленные проценты</returns>
-        public double calc_p(double sn, double p) => sn * p / 12;
+        public double calc_p(double sn, double p)
+        {
+            return sn*p/12;
+        }
 
         /// <summary>
         /// Расчёт комиссии на указанный месяц(Начиная с нулевого)

@@ -101,12 +101,18 @@ namespace Bank
         /// <summary>
         /// Полная сумма выплат
         /// </summary>
-        public double PaymentsSum => Payment.Sum();
+        public double PaymentsSum
+        {
+            get { return Payment.Sum(); }
+        }
 
         /// <summary>
         /// Полная сумма начисленных процентов
         /// </summary>
-        public double PSum => p.Sum();
+        public double PSum
+        {
+            get { return p.Sum(); }
+        }
 
         /// <summary>
         /// Все месяцы уплаты

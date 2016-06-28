@@ -62,7 +62,25 @@ namespace Bank
             _core.SaveData(Convert.ToDouble(Ts.Text, CultureInfo.InvariantCulture), Convert.ToDouble(Tp.Text, CultureInfo.InvariantCulture),
 Convert.ToInt32(Tn.Text, CultureInfo.InvariantCulture), type, sum, DpDate.DisplayDate,Convert.ToDouble(TEqualPayment.Text,CultureInfo.InvariantCulture));
 
-            var pType = (PaymentType)CbPayment.SelectedIndex + 1;
+            var pType = (PaymentType)CbPayment.SelectedIndex;
+
+            if (pType == PaymentType.Equal)
+            {
+                double x = _core.calc_x(Convert.ToDouble(Ts.Text, CultureInfo.InvariantCulture),
+                    Convert.ToDouble(Tp.Text, CultureInfo.InvariantCulture)/100,
+                    Convert.ToInt32(Tn.Text, CultureInfo.InvariantCulture));
+                if (Convert.ToDouble(TEqualPayment.Text, CultureInfo.InvariantCulture) < x)
+                {
+                    MessageBox.Show("Сумма платежа должна быть не меньше " + x + " руб.");
+                    TEqualPayment.Foreground = Brushes.Red;
+                    return;
+                }
+                else
+                {
+                    TEqualPayment.Foreground = Brushes.Green;
+                }
+            }
+
             _core.Calculate(pType);
 
             DgResults.ItemsSource = _core.CreatePaymentGraph();
@@ -167,6 +185,11 @@ Convert.ToInt32(Tn.Text, CultureInfo.InvariantCulture), type, sum, DpDate.Displa
             {
                 bCalculate_Click(e, new RoutedEventArgs());
             }
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Автор: Глухов Владимир 2016");
         }
     }
 }
