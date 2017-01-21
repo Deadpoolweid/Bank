@@ -19,7 +19,7 @@
                 <MenuItem Header="О программе" Click="MenuItem_Click"/>
             </Menu>
         </DockPanel>
-        <StackPanel Grid.Row="1" Margin="0,0,-8,0" VerticalAlignment="Top" Orientation="Horizontal" MinWidth="{DynamicResource {x:Static SystemParameters.MaximizedPrimaryScreenWidthKey}}">
+        <StackPanel x:Name="spBody" Grid.Row="1" Margin="0,0,-8,0" VerticalAlignment="Top" Orientation="Horizontal" MinWidth="{DynamicResource {x:Static SystemParameters.MaximizedPrimaryScreenWidthKey}}">
             <DockPanel  Dock="Left" HorizontalAlignment="Center">
                 <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top">
                     <Label x:Name="Label" Content="Сумма покупки" HorizontalAlignment="Left" VerticalAlignment="Top"/>

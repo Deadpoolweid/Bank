@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace Bank
 {
@@ -22,6 +23,23 @@ namespace Bank
             CbPayment.SelectedIndex = 0;
             CbServicePayment.SelectedIndex = 0;
             DpDate.DisplayDate = DateTime.Today;
+
+
+            BitmapImage b = new BitmapImage();
+            b.BeginInit();
+            b.UriSource = new Uri(@"/Images/Bank.png", UriKind.Relative);
+            b.EndInit();
+
+
+            System.Windows.Controls.Image img = new Image
+            {
+                Source = b,
+                Width = 40
+            };
+
+            MessageBox.Show("Количество imageй ", "ImageChoose", MessageBoxButton.OK, MessageBoxImage.Asterisk);
+
+            spBody.Children.Add(img);
         }
 
         readonly Core _core = new Core();
